@@ -79,7 +79,7 @@ void short_inspect(struct bb_thread_params *my_bb_thread_params){
 	std::cout << "> ";
 	return;
     }
-    std::cout << " | upper bound=" << std::fixed << std::setprecision(3) << CGAL::to_double(my_bb_thread_params->upper_bound);
+    std::cout << " | upper bound=" << std::fixed << std::setprecision(10) << CGAL::to_double(my_bb_thread_params->upper_bound);
     std::cout << " | time="<< ms/(3600000L) <<":";
     std::cout << std::fixed << std::setfill('0') << std::setw(2) << ms%(3600000L)/60000L << ":";
     std::cout << std::fixed << std::setfill('0') << std::setw(2) << ms%(60000L)/1000L << "> "; //<< ".";

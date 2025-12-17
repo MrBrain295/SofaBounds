@@ -14,13 +14,10 @@
 
 #include "sofa-bounds.hpp"
 
-std::string rat_str(ExactRational x){
-    //convert rational to string
-    char mystring[500];
-    mpq_get_str(mystring,10,x.mpq());
-    std::string the_string(mystring);
-    return the_string;
+std::string rat_str(ExactRational x) {
+    return x.str(10);
 }
+
 
 void split_interval(struct interval b, struct interval *b1, struct interval *b2){
     //split an interval in two
@@ -206,12 +203,12 @@ inline Nef_polygon ell_side(struct slope myslope, struct interval myinterval, in
     else x = myinterval.right;
     x *= mc;
 
-    ci *= x.denominator();
+    ci *= boost::multiprecision::denominator(x);
 
-    ci -= x.numerator();
+    ci -= boost::multiprecision::numerator(x);
     
-    ai*=x.denominator();
-    bi*=x.denominator();
+    ai*=boost::multiprecision::denominator(x);
+    bi*=boost::multiprecision::denominator(x);
 
     //reverse the orientation of the line if we want the halfplane under it
     if (overunder == 1) {

@@ -6,7 +6,7 @@ Tested to work with CGAL 4.12 and Boost 1.67.
 
 On a typical setup, you will compile the program with the following command:
 
-    g++ -o SofaBounds sofa-bounds.cpp branch-and-bound.cpp frontend.cpp -lCGAL -lgmp -lmpfr -O3 -frounding-math -finline-functions -lpthread
+    g++ -o SofaBounds sofa-bounds.cpp branch-and-bound.cpp frontend.cpp -lgmp -lmpfr -O3 -frounding-math -finline-functions -lpthread
 
 Running the executable will present you with a prompt.
 
