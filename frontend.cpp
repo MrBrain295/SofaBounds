@@ -41,7 +41,8 @@ setslope [ind] [a] [b] [c]:\tset the Pythagorean triple associated with the [ind
 setfinalmin [a] [b] [c]:\t\tset the Pythagorean triple associated with the minimum final slope to ([a],[b],[c])\n\
 setfinalmax [a] [b] [c]:\t\tset the Pythagorean triple associated with the maximum final slope to ([a],[b],[c])\n\
 reportevery [x] [sec|iter|jump]:\twhile running, print short progress report every x seconds, x iterations, or imporvement of x in the upper bound. A value of 0 cancels this reporting mode\n\
-run:\t\t\trun thread with current settings\n\
+setcheckpoint [x] [iter] [filename]:\tenable automatic checkpointing every x iterations to specified file. Use 0 to disable.\n\
+run:\t\t\trun thread with current settings (automatically resumes from checkpoint if available)\n\
 stop:\t\t\tstop currently running thread\n\
 inspect:\t\treport progress of current thread\n\
 load [filename]:\t\tload settings from file\n\
@@ -173,6 +174,10 @@ int process_command(struct bb_thread_params *my_bb_thread_params, std::string in
         if (my_bb_thread_params->reporteveryjump_on) std::cout << "\t" << my_bb_thread_params->reporteveryjump_inc << " decrease in upper bound" << std::endl << "\t\t\t\t";
 	if (my_bb_thread_params->reporteverysec_on || my_bb_thread_params->reporteveryiter_on || my_bb_thread_params->reporteveryjump_on)
 	    std::cout << std::endl;
+	if (my_bb_thread_params->checkpoint_on) {
+	    std::cout << "\nCheckpointing enabled:\t\t" << "every " << my_bb_thread_params->checkpoint_iter_inc << " iterations" << std::endl;
+	    std::cout << "Checkpoint file:\t\t" << my_bb_thread_params->checkpoint_filename << std::endl;
+	}
     }
     else if (input_command == "setcorr") {
 	unsigned int new_num_corridors;
@@ -287,6 +292,8 @@ int process_command(struct bb_thread_params *my_bb_thread_params, std::string in
 	else outfile << "reportevery 0 iter" << std::endl;
 	if (my_bb_thread_params->reporteveryjump_on) outfile << "reportevery " << my_bb_thread_params->reporteveryjump_inc << " jump" << std::endl;
 	else outfile << "reportevery 0 jump" << std::endl;
+	if (my_bb_thread_params->checkpoint_on) outfile << "setcheckpoint " << my_bb_thread_params->checkpoint_iter_inc << " iter " << my_bb_thread_params->checkpoint_filename << std::endl;
+	else outfile << "setcheckpoint 0 iter" << std::endl;
 	outfile << std::endl;
 
 	if (my_bb_thread_params->iterations > 0) {
@@ -348,6 +355,29 @@ int process_command(struct bb_thread_params *my_bb_thread_params, std::string in
 	    std::cout << "Unknown increment type for reportevery" << std::endl;
 	}
     }
+    else if (input_command == "setcheckpoint") {
+	std::string str_inc, type, filename;
+	input_stream >> str_inc >> type >> filename;
+	if (type == "iter") {
+	    unsigned long inc_iter;
+	    std::stringstream(str_inc) >> inc_iter;
+	    if (inc_iter == 0) {
+		my_bb_thread_params->checkpoint_on = false;
+		std::cout << "Checkpointing disabled." << std::endl;
+	    } else {
+		if (filename.empty()) {
+		    std::cout << "Error: checkpoint filename required" << std::endl;
+		} else {
+		    my_bb_thread_params->checkpoint_iter_inc = inc_iter;
+		    my_bb_thread_params->checkpoint_filename = filename;
+		    my_bb_thread_params->checkpoint_on = true;
+		    std::cout << "Checkpointing enabled: every " << inc_iter << " iterations to '" << filename << "'" << std::endl;
+		}
+	    }
+	} else {
+	    std::cout << "Error: use 'setcheckpoint [iterations] iter [filename]'" << std::endl;
+	}
+    }
     else if (input_command != "" && input_command[0] != '#' /* to allow inputting comments */ ) {
 	std::cout << "Unknown command \"" << input_command << "\". Type \"help\" for instructions.\n";
     }
@@ -365,6 +395,10 @@ int main(int argc, const char * argv[]) {
     my_bb_thread_params.reporteverysec_inc = 10;
     my_bb_thread_params.reporteveryiter_on = false;
     my_bb_thread_params.reporteveryjump_on = false;
+    my_bb_thread_params.checkpoint_on = false;
+    my_bb_thread_params.checkpoint_iter_inc = 1000;
+    my_bb_thread_params.checkpoint_iter_last = 0;
+    my_bb_thread_params.checkpoint_filename = "";
     while (true) {
         if (my_bb_thread_params.is_thread_running)
 	    short_inspect(&my_bb_thread_params);

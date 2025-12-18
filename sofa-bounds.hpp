@@ -80,6 +80,12 @@ struct bb_thread_params {
     unsigned int reporteverysec_inc;
     unsigned long reporteveryiter_last,reporteveryiter_inc;
     double reporteveryjump_last,reporteveryjump_inc;
+
+    //checkpoint variables
+    bool checkpoint_on; //enable automatic checkpointing
+    unsigned long checkpoint_iter_inc; //checkpoint every N iterations
+    unsigned long checkpoint_iter_last; //last iteration when checkpoint was saved
+    std::string checkpoint_filename; //filename for checkpoint
 };
 
 struct CompareBoxes {
@@ -104,6 +110,10 @@ ExactRational initial_lower_bound(struct slope m);
 
 //this function is implemented in branch-and-bound.cpp
 int branch_and_bound(struct bb_thread_params *the_bb_thread_params);
+
+//checkpoint functions implemented in branch-and-bound.cpp
+bool save_checkpoint(const std::string &filename, struct bb_thread_params *params, const std::priority_queue<struct box, std::vector<struct box>, struct CompareBoxes> &boxqueue, long elapsed_ms);
+bool load_checkpoint(const std::string &filename, struct bb_thread_params *params, std::priority_queue<struct box, std::vector<struct box>, struct CompareBoxes> &boxqueue, long &elapsed_ms);
 
 //this function is implemented in frontend.cpp
 void short_inspect(struct bb_thread_params *my_bb_thread_params);
