@@ -1,0 +1,15 @@
+# Checkpoint files - these contain runtime state and should not be committed
+*.ckpt
+checkpoint.dat
+*.checkpoint
+
+# Build artifacts
+*.o
+*.a
+
+# Editor and IDE files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

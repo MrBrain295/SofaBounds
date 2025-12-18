@@ -293,7 +293,7 @@ int process_command(struct bb_thread_params *my_bb_thread_params, std::string in
 	if (my_bb_thread_params->reporteveryjump_on) outfile << "reportevery " << my_bb_thread_params->reporteveryjump_inc << " jump" << std::endl;
 	else outfile << "reportevery 0 jump" << std::endl;
 	if (my_bb_thread_params->checkpoint_on) outfile << "setcheckpoint " << my_bb_thread_params->checkpoint_iter_inc << " iter " << my_bb_thread_params->checkpoint_filename << std::endl;
-	else outfile << "setcheckpoint 0 iter" << std::endl;
+	else outfile << "setcheckpoint 0 iter checkpoint.dat" << std::endl;
 	outfile << std::endl;
 
 	if (my_bb_thread_params->iterations > 0) {

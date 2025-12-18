@@ -65,3 +65,15 @@ You can stop a currently running calculation with the command "stop", which will
     time: 0:02:18.202
 
 You can print out the current settings with the command "settings", or save them to a file, together with the results of the calculation, if it has already started with the command "save [filename]". You can also load previously saved settings with "load [filename]". Finally, the command "savepoly [filename]" saves the polygons associated with the current upper and lower bounds to a file (this command only works if there is a thread currently running).
+
+## Checkpoint Feature
+
+SofaBounds now supports automatic checkpointing to preserve search state. This allows you to resume long-running calculations after a crash or power outage.
+
+To enable checkpointing, use:
+
+    > setcheckpoint 1000 iter checkpoint.dat
+
+This will automatically save the search state every 1000 iterations to "checkpoint.dat". When you run the calculation again with the same checkpoint file configured, it will automatically resume from where it left off.
+
+For more details, see [CHECKPOINT_FEATURE.md](CHECKPOINT_FEATURE.md).

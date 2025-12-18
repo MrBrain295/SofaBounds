@@ -27,9 +27,9 @@ int branch_and_bound(struct bb_thread_params *my_bb_thread_params) {
     ExactRational bestyet;
     long elapsed_ms = 0;
 
-    // Try to load checkpoint if it exists
+    // Try to load checkpoint if checkpointing is enabled and filename is set
     bool loaded_checkpoint = false;
-    if (!my_bb_thread_params->checkpoint_filename.empty()) {
+    if (my_bb_thread_params->checkpoint_on && !my_bb_thread_params->checkpoint_filename.empty()) {
         loaded_checkpoint = load_checkpoint(my_bb_thread_params->checkpoint_filename, my_bb_thread_params, boxqueue, elapsed_ms);
         if (loaded_checkpoint) {
             std::cout << "Loaded checkpoint from '" << my_bb_thread_params->checkpoint_filename << "'" << std::endl;
@@ -267,11 +267,12 @@ bool load_checkpoint(const std::string &filename, struct bb_thread_params *param
     infile >> params->has_final;
 
     // Load runtime state
+    // Read as string first to handle rational format (e.g., "1/2" or "123")
     std::string lower_str, upper_str;
     infile >> lower_str;
-    params->lower_bound = ExactRational(lower_str.c_str());
+    std::istringstream(lower_str) >> params->lower_bound;
     infile >> upper_str;
-    params->upper_bound = ExactRational(upper_str.c_str());
+    std::istringstream(upper_str) >> params->upper_bound;
     infile >> params->iterations;
     infile >> elapsed_ms;
 
@@ -282,7 +283,7 @@ bool load_checkpoint(const std::string &filename, struct bb_thread_params *param
     for (unsigned int i = 0; i < witness_size; i++) {
         std::string val;
         infile >> val;
-        params->lower_bound_witness[i] = ExactRational(val.c_str());
+        std::istringstream(val) >> params->lower_bound_witness[i];
     }
 
     // Load lower bound polygon
@@ -292,7 +293,7 @@ bool load_checkpoint(const std::string &filename, struct bb_thread_params *param
     for (unsigned int i = 0; i < poly_size; i++) {
         std::string val;
         infile >> val;
-        params->lower_bound_polygon[i] = ExactRational(val.c_str());
+        std::istringstream(val) >> params->lower_bound_polygon[i];
     }
 
     // Load upper bound polygon
@@ -301,7 +302,7 @@ bool load_checkpoint(const std::string &filename, struct bb_thread_params *param
     for (unsigned int i = 0; i < poly_size; i++) {
         std::string val;
         infile >> val;
-        params->upper_bound_polygon[i] = ExactRational(val.c_str());
+        std::istringstream(val) >> params->upper_bound_polygon[i];
     }
 
     // Load priority queue
@@ -318,7 +319,7 @@ bool load_checkpoint(const std::string &filename, struct bb_thread_params *param
         infile >> b.depth;
         std::string ub_str;
         infile >> ub_str;
-        b.upper_bound_on_max_in_box = ExactRational(ub_str.c_str());
+        std::istringstream(ub_str) >> b.upper_bound_on_max_in_box;
         
         size_t intervals_size;
         infile >> intervals_size;
@@ -327,8 +328,8 @@ bool load_checkpoint(const std::string &filename, struct bb_thread_params *param
         for (unsigned int j = 0; j < intervals_size; j++) {
             std::string left_str, right_str;
             infile >> left_str >> right_str;
-            b.coord_bound_intervals[j].left = ExactRational(left_str.c_str());
-            b.coord_bound_intervals[j].right = ExactRational(right_str.c_str());
+            std::istringstream(left_str) >> b.coord_bound_intervals[j].left;
+            std::istringstream(right_str) >> b.coord_bound_intervals[j].right;
         }
         
         boxqueue.push(b);

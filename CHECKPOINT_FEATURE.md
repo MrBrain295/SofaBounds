@@ -63,7 +63,7 @@ The checkpoint file contains:
 - Priority queue state (all pending boxes to explore)
 - Lower bound witness and polygons
 
-**Note:** Checkpoint files are in a special binary format and should not be edited manually.
+**Note:** Checkpoint files are in a special text format and should not be edited manually.
 
 ## Example Workflow
 
