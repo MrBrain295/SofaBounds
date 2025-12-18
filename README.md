@@ -75,5 +75,3 @@ To enable checkpointing, use:
     > setcheckpoint 1000 iter checkpoint.dat
 
 This will automatically save the search state every 1000 iterations to "checkpoint.dat". When you run the calculation again with the same checkpoint file configured, it will automatically resume from where it left off.
-
-For more details, see [CHECKPOINT_FEATURE.md](CHECKPOINT_FEATURE.md).
